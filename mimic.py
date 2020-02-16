@@ -46,49 +46,47 @@ columns, so the output looks better.
 import random
 import sys
 
-__author__ = "???"
+
+def mimic_dict(filename):
+    """Returns mimic dict mapping each word to list of words which follow it."""
+    f = open(filename, "r")
+    words = f.read().replace('\n', ' ').split()
+    f.close()
+    index_of_next_word = 1
+    mimic_dict_ = {'': words}
+    for word in words:
+        if index_of_next_word < len(words) - 1:
+            if word in mimic_dict_:
+                mimic_dict_[word].append(words[index_of_next_word])
+            else:
+                mimic_dict_[word] = [words[index_of_next_word]]
+            index_of_next_word += 1
+    return mimic_dict_
 
 
-def create_mimic_dict(filename):
-    """Returns mimic dict mapping each word to list of words which follow it. 
-    For example:
-        Input: "I am a software developer, and I don't care who knows"
-        Output: 
-            {
-                "" : ["I"],
-                "I" : ["am", "don't"], 
-                "am": ["a"], 
-                "a": ["software"],
-                "software" : ["developer,"],
-                "developer," : ["and"],
-                "and" : ["I"],
-                "I" : ["don't"],
-                "don't" : ["care"],
-                "care" : ["who"],
-                "who" : ["knows"]
-            }
-    """
-    # +++your code here+++
-    
-
-def print_mimic(mimic_dict, start_word):
-    """Given a previously compiled mimic_dict and start_word, prints 200 random words:
-        - Print the start_word
-        - Lookup the start_word in your mimic_dict and get it's next-list
-        - Randomly select a new word from the next-list
-        - Repeat this process 200 times
-    """
-    # +++your code here+++
-    pass
+def print_mimic(mimic_dict, word):
+    """Given mimic dict and start word, prints 200 random words."""
+    text = ''
+    line_length = 0
+    following_words = mimic_dict[word]
+    for i in list(range(200)):
+        word = random.choice(following_words)
+        following_words = mimic_dict[word]
+        text += " " + word
+        line_length += len(word) + 1
+        if line_length > 70:
+            text += '\n'
+            line_length = 0
+    print(text)
 
 
 # Provided main(), calls mimic_dict() and mimic()
 def main():
     if len(sys.argv) != 2:
-        print 'usage: python mimic.py file-to-read'
+        print('usage: python mimic.py file-to-read')
         sys.exit(1)
 
-    d = create_mimic_dict(sys.argv[1])
+    d = mimic_dict(sys.argv[1])
     print_mimic(d, '')
 
 
